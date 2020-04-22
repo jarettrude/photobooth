@@ -1,3 +1,6 @@
 [submodule "vendor/PHPMailer"]
 	path = vendor/PHPMailer
 	url = https://github.com/PHPMailer/PHPMailer
+[submodule "vendor/rpihotspot"]
+	path = vendor/rpihotspot
+	url = https://github.com/idev1/rpihotspot.git
