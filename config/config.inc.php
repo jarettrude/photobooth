@@ -87,8 +87,8 @@ $config['protect_index'] = false;
 $config['font_size'] = '16px';
 
 // COLORS
-$config['colors']['primary'] = '#e67e22';
-$config['colors']['secondary'] = '#d35400';
+$config['colors']['primary'] = '#669db3';
+$config['colors']['secondary'] = '#ff4f58';
 $config['colors']['font'] = '#000000';
 $config['colors']['button_font'] = '#ffffff';
 $config['colors']['start_font'] = '#ffffff';
