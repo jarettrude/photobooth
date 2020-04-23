@@ -1,5 +1,7 @@
 # Photobooth
-![Photobooth](photobooth.jpeg)
+<p align=center>
+  <img src='photobooth.jpeg' alt'Photobooth'>
+</p>
 A Photobooth web interface for Raspberry Pi originally developed by Andre Rinas. A big thanks to the community behind this project for your dedicated work to continuously improve this project. Check out the main repo over here: https://github.com/andreknieriem/photobooth. They have a great wiki with detailed install instructions and FAQ if you hit any roadblocks.
 
 This fork is my personal mod to make the photobooth work on a Raspberry Pi 3B with the official Raspberry Pi touch screen and an Arduino micro that drives a 24 NeoPixel Ring as a countdown timer and an 140 NeoPixel strip as a flash.
