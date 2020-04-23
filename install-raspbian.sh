@@ -83,7 +83,7 @@ lighttpd_webserver() {
 # http://redmine.lighttpd.net/projects/lighttpd/wiki/Docs:ConfigurationOptions#mod_fastcgi-fastcgi
 
 ## Start an FastCGI server for php (needs the php5-cgi package)
-fastcgi.server += ( ".php" => 
+fastcgi.server += ( ".php" =>
 	((
 		"socket" => "/var/run/php/php7.3-fpm.sock",
 		"broken-scriptfilename" => "enable"
@@ -164,7 +164,7 @@ else
     INSTALLFOLDERPATH="/var/www/html/$INSTALLFOLDER/"
 fi
 
-echo -e "\033[0;33m### Do you like to install from git? This will take more"
+echo -e "\033[0;33m### Proceed with auto-install from git? This will take some"
 read -p "### time and is recommended only for brave users. [y/N] " -n 1 -r
 echo -e "\033[0m"
 if [[ $REPLY =~ ^[Yy]$ ]]
@@ -181,7 +181,7 @@ then
     apt install -y yarn
 
     info "### Now we are going to install Photobooth."
-    git clone https://github.com/andreknieriem/photobooth $INSTALLFOLDER
+    git clone https://github.com/jarettrude/photobooth $INSTALLFOLDER
     cd $INSTALLFOLDERPATH
     LATEST_VERSION=$( git describe --tags `git rev-list --tags --max-count=1` )
     info "### We ar installing version $LATEST_VERSION".
@@ -192,19 +192,7 @@ then
     yarn install
     yarn build
 else
-    info "### Downloading the latest build."
-
-    info "### Installing a little helper tool to determine the correct url."
-    apt install -y jq
-
-    info "### Downloading the latest release and extracting it."
-    curl -s https://api.github.com/repos/andreknieriem/photobooth/releases/latest |
-        jq '.assets[].browser_download_url | select(endswith(".tar.gz"))' |
-        xargs curl -L --output /tmp/photobooth-latest.tar.gz
-
-    mkdir -p $INSTALLFOLDERPATH
-    tar -xzvf /tmp/photobooth-latest.tar.gz -C $INSTALLFOLDERPATH
-    cd $INSTALLFOLDERPATH
+    exit
 fi
 
 info "### Setting permissions."
@@ -220,7 +208,7 @@ info "### Disable camera automount"
 chmod -x /usr/lib/gvfs/gvfs-gphoto2-volume-monitor
 
 echo -e "\033[0;33m### You probably like to start the browser on every start."
-read -p "### Open Chromium in Kiosk Mode at every boot and hide the mouse cursor? [y/N] " -n 1 -r
+read -p "### Open Chromium in Kiosk Mode, with address http://localhost/, at every boot and hide the mouse cursor? [y/N] " -n 1 -r
 echo -e "\033[0m"
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
@@ -228,11 +216,7 @@ then
 
     cat >> /etc/xdg/lxsession/LXDE-pi/autostart <<EOF
 
-@xset s off
-@xset -dpms
-@xset s noblank
-@chromium-browser --incognito --kiosk http://localhost/
-
+@chromium-browser --noerrdialogs --start-fullscreen --kiosk http://localhost/ --incognito --disable-translate --no-first-run --fast --fast-start --disable-infobars --touch-events=enabled
 @unclutter -idle 3
 
 EOF
