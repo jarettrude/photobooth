@@ -1,96 +1,114 @@
-# Photobooth by Andre Rinas
+# Photobooth
+![Photobooth](photobooth.jpeg)
+A Photobooth web interface for Raspberry Pi originally developed by Andre Rinas. A big thanks to the community behind this project for your dedicated work to continuously improve this project. Check out the main repo over here: https://github.com/andreknieriem/photobooth. They have a great wiki with detailed install instructions and FAQ if you hit any roadblocks.
 
-A Photobooth web interface for Raspberry Pi and Windows.
+This fork is my personal mod to make the photobooth work on a Raspberry Pi 3B with the official Raspberry Pi touch screen and an Arduino micro that drives a 24 NeoPixel Ring as a countdown timer and an 140 NeoPixel strip as a flash.
 
-## :heart_eyes: Features
+## Install instructions
 
-- Works on Windows and Linux.
-  - Under Windows [digiCamControl](http://digicamcontrol.com/) by Duka Istvan
-    can be used to control the camera and to take pictures.
-  - Under Linux [gPhoto2](http://gphoto.org/) is used to control the camera and
-    to take pictures.
-- Images are processed with GD.
-- Photobooth caches all generated QR-Codes, Thumbnails and Prints.
-- Standalone Gallery (`localhost/gallery.php`).
-- Settings can be changed via Admin Panel (under `localhost/admin`):
-  - Multi-language support:
-    - German
-    - English
-    - Spanish
-    - French
-    - Greek
-  - Gallery:
-    - Order pictures in gallery ascending oder descending by picture age.
-    - Hide the gallery.
-  - Choose between md5- or date-formatted image names.
-  - Choose an image filter after taking a picture.
-  - QR-Code to allow downloading pictures from your Photobooth.
-  - Pictures can be directly downloaded from the gallery.
-  - Print feature.
-    - Optional: Print a frame on your picture
-      (replace `resources/img/frames/frame.png` with a frame of your choice).
-    - Optional: Print text on your picture.
-    - Optional: Print QR-Code on the right side of your picture.
-  - Pictures can be sent via e-mail.
-  - LivePreview (uses device cam).
-  - Event specific (e.g. wedding, birthday) config to show a symbol (e.g. heart)
-    between some text on the start page.
-  - Green screen keying (chroma keying).
-  - Photo collage function: take 4 pictures in a row with or without
-    interruption and let it generate a collage out of it.
-  - Save pictures with a Polaroid effect.
-  - Adjust take picture and print commands.
-  - And many more options to adjust and style Photobooth for your personal needs.
-  
-## :camera: Screenshots
+The easiest way to install everything is to utilize the installation script that will walk you through the entire process. The default webserver for the photobooth is NGINX as it is lightweight and fast.
 
-![](https://raw.githubusercontent.com/wiki/andreknieriem/photobooth/images/start.png)
+To use Apache as your webserver add `apache` after `install-rasbian.sh`.
 
-## :gear: Prerequisites
+Or, to use Lighttpd as your webserver add `lighttpd` after `install-rasbian.sh`.
 
-- gphoto2 installed, if used on a Raspberry for DSLR control
-- digiCamControl, if used unter Windows for DSLR control
-- NGINX, Lighttpd or Apache
+```
+wget https://raw.githubusercontent.com/jarettrude/photobooth/master/install-raspbian.sh
+sudo bash install-raspbian.sh
+```
+### Enable button to take picture
 
-## :wrench: Installation & Troubleshooting
+Install dependencies
+```
+sudo apt install libudev-dev
+sudo pip3 install python-uinput
+echo "uinput" | sudo tee -a /etc/modules
+```
+Ensure button.py runs a system start-up.
+```
+sudo crontab -e
+```
+Add button.py to bottom of file.
+```
+@reboot python3 /var/www/html/button.py &
+```
+#### Flash an Arduino with script to run flash and count-down ring.
 
-Please follow the installation instructions in our
-[Photobooth-Wiki](https://github.com/andreknieriem/photobooth/wiki) to setup
-Photobooth.
+The `Arduino` file contains everything you need to flash an arduino. In the Arduino IDE you can add the NeoPixel library provided or download the latest build. Then open the photobooth sketch and upload it to an Arduino.
 
-If you're having trouble or questions please take a look at our
-[FAQ](https://github.com/andreknieriem/photobooth/wiki#faq---frequently-asked-questions)
-before opening a new issue.
+It is important to point out that communication between the Raspberry Pi and Arduino is handled across GPIO pins via logic level shifter. Comments in the sketch and button.py file indicate which GPIO pins to connect the buttons and NeoPixels too.
 
-### :mag: Changelog
+For my current build, I powered the NeoPixel ring and strip from an external power source to ensure they had enough juice.
 
-Please take a look at the changelog in our [Photobooth Wiki](https://github.com/andreknieriem/photobooth/wiki/changelog).
+## gphoto2 Update
 
-### :mortar_board: Tutorial
+Depending on the version of raspbian you are using, you may find the version of gphoto2 to be much lower than the current version. Check which version you have installed:
+```
+gphoto2 --version
+```
+To install the most up to date version you can use another installer script:
+```
+sudo apt-get remove gphoto2 libgphoto2*
+wget https://raw.githubusercontent.com/gonzalo/gphoto2-updater/master/gphoto2-updater.sh && chmod +x gphoto2-updater.sh && sudo ./gphoto2-updater.sh
+```
+## Turn Photobooth into a WIFI hotspot
 
-[Raspberry Pi Weddingphotobooth (german)](https://www.andrerinas.de/tutorials/raspberry-pi-einen-dslr-weddingphotobooth-erstellen.html)
+If you would like to allow your guests to download their images without connecting to your private WIFI or when there is no other WIFI around, you can turn your Raspberry Pi into setup an access point and WiFi client/station network on the single WiFi chip of the Raspberry Pi.
 
-### :clap: Contributors and thanks to
+The default setting is to call your wifi hotspot photobooth as this is built into the photobooth prompt for guests to download images via QR code.
 
-- [dimsemenov](https://github.com/dimsemenov/photoswipe)
-- [t0k4rt](https://github.com/t0k4rt/phpqrcode)
-- [nihilor](https://github.com/nihilor/photobooth)
-- [vrs01](https://github.com/vrs01)
-- [F4bsi](https://github.com/F4bsi)
-- [got-x](https://github.com/got-x)
-- [RaphaelKunis](https://github.com/RaphaelKunis)
-- [andi34](https://github.com/andi34)
-- [Norman-Sch](https://github.com/Norman-Sch)
-- [marcogracklauer](https://github.com/marcogracklauer)
-- [dnks23](https://github.com/dnks23)
-- [tobiashaas](https://github.com/tobiashaas)
-- Martin Kaiser-Kaplaner
-- [MoJou90](https://github.com/MoJou90)
-- [Reinhard Reberning](https://www.reinhard-rebernig.at/website/websites/fotokasterl)
-- [Steffen Musch](https://github.com/Nie-Oh)
-- [flighter18](https://github.com/flighter18)
-- [thymon13](https://github.com/thymon13)
-- [vdubuk](https://github.com/vdubuk)
-- [msmedien](https://github.com/msmedien)
-- [sualko](https://github.com/sualko)
-- [rawbertp](https://github.com/rawbertp)
+First head over to the hotspot directory to run the installer
+```
+cd /var/www/html/vendor/rpihotspot
+```
+There are a couple of flags you need to change from the example command below.
+ - change `password` to your desired password, make it easy enough for guests to remember
+ - change `country code` from `CA` to your own localization.
+ - keep or change the ip address `10.10.10.10`. Remember what you change it to as we will need to update this in another file next.
+
+```
+sudo ./setup-network.sh --install-upgrade --ap-ssid="photobooth" --ap-password="password" --ap-password-encrypt
+--ap-country-code="CA" --ap-ip-address="10.10.10.10" --wifi-interface="wlan0"
+```
+If you run into any errors setting up your hotspot we can remove all the settings and try it again. The first time I ran this I ran into an error, I reset it using the command below, then reinstalled it. It went smoothly the second time.
+
+```
+sudo ./setup-network.sh --clean
+```
+If you chose to use a different ip address you will need to update the photobooth.desktop shorcut before copy it from this directory to your desktop.
+
+```
+sudo sed -i 's|10.10.10.10|your_ip_here|g' photobooth.desktop
+```
+
+Next, if you configured your Raspberry Pi to boot into kiosk mode we will need to update the autostart command to reflect your ip address.
+
+```
+sudo nano /etc/xdg/lxsession/LXDE-pi/autostart
+```
+Find `--kiosk http://localhost/` and replace it with you ip address, e.g. `--kiosk http://10.10.10.10/`
+
+### A note on using PHP mailer to send your guests their photos.
+ - Should be obvious but the photobooth must be connected to WIFI/internet to send photos live.
+ - Otherwise, tell them to check the box to send them the photo later and it will add everyone's email to a list for you.
+ - I ran into a lot of issues trying to use gmail until I found out you need to generate an app password if you have 2-factor authentication on.
+ - Using the following settings for gmail have been tested to work:
+ ```
+gmail.com
+Email host adress:  smtp.gmail.com
+Username:           *****@gmail.com
+Port:               587
+Security:           TLS
+ ```
+
+## Time to have fun!
+
+#### A few last remarks.
+
+There are a ton of configurable settings available out of the box. Before you set the photobooth up for an event you can head to the admin page and customize it to your needs.
+
+`http://localhost/admin`
+
+Unless you changed it, all photos are stored here (along with the list of guest emails if you enabled it): `/var/www/html/data/`. Save this as a shortcut so you can grab them later!
+
+#### ENJOY!
